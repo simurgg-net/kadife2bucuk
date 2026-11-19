@@ -1,9 +1,19 @@
-KADİFE — MODÜLER DENEME SÜRÜMÜ
+KADİFE — Catan esintili modüler paket
 
-1) ZIP dosyasını bir klasöre çıkar.
-2) index.html dosyasını Chrome veya Edge ile aç.
-3) Tek başına dene seçeneğiyle oyuna gir.
+DOSYALAR
+- index.html: oyun arayüzü
+- style.css: arayüz tasarımı ve responsive düzen
+- game.js: oyun kuralları, tahta, mağaza ve PeerJS ağ iletişimi
+- assets/terrain/*.webp: C tarzı arazi görselleri
+- assets/thief.svg: zırhlı haydut figürü
 
-Not: Çok oyunculu oda için internet bağlantısı ve PeerJS CDN erişimi gerekir.
-Bu sürümde arazi görselleri bu klasördeki assets/terrain altında, hırsız modeli assets/thief.svg dosyasındadır.
-Gelişim kartları A — klasik parşömen tasarımıdır. Bolluk Yılı kartı, istenen iki kaynak kartını bankadan seçtiren İcat olarak adlandırılmıştır.
+ÇALIŞTIRMA
+Klasörü bütün halinde tutun. index.html dosyasını açın.
+Çevrim içi oda için internet bağlantısı ve PeerJS CDN erişimi gerekir.
+Tek oyunculu deneme yerel olarak açılabilir.
+
+SOHBET
+Sağ oyun panelinde Sohbet & Pazarlık bölümü bulunur. Oda sahibi mesajları bağlı oyunculara dağıtır. Tek oyunculu modda sohbet yalnızca yerel deneme alanıdır.
+
+NOT
+Bu paket mevcut C tarzı WEBP arazi dosyaları ve B tarzı zırhlı haydut figürü üzerinden hazırlanmıştır. Kod sözdizimi kontrol edilmiştir; çok oyunculu tarayıcı testi ayrıca yapılmalıdır.

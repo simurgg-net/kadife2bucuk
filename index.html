@@ -52,6 +52,12 @@
 </div>
 <div id=side><h1>Kadife</h1>
 <div class=card id=room></div><div id=st style="font-weight:600"></div><div class=card id=guide></div><div id=pl></div>
+<section id="chatPanel" class="chat-panel" aria-label="Oyuncu sohbeti">
+  <header class="chat-head"><div><span class="chat-eyebrow">ADA MEYDANI</span><h2>💬 Sohbet & Pazarlık</h2><small>Birbirinle nazikçe anlaş, teklifini konuş.</small></div><span class="chat-online" id="chatOnline">● CANLI</span></header>
+  <div id="chatMessages" class="chat-messages" aria-live="polite"><div class="chat-welcome"><b>Hoş geldin!</b><span>Kaynak tekliflerini burada konuşabilirsin. İyi oyunlar. ⚓</span></div></div>
+  <form id="chatForm" class="chat-compose" onsubmit="sendChat(event)"><input id="chatInput" maxlength="240" autocomplete="off" placeholder="Mesajını yaz…" aria-label="Sohbet mesajı"><button type="submit" aria-label="Mesajı gönder">➤</button></form>
+  <div class="chat-foot">Nezaketli sohbet · Oda oyuncularına görünür</div>
+</section>
 <div class=dice id=dice aria-live=polite></div>
 <div><button id=start onclick="send({t:'start'})">▶ Oyunu başlat</button><button id=roll onclick="send({t:'roll'})">🎲 Bilgisayar zarı at</button>
 <div id=manualRoll hidden class="manual-roll"><small>Fiziksel zarları at ve gelen sonuçları gir:</small>

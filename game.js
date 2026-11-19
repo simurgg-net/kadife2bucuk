@@ -244,6 +244,18 @@ function view(pid){return{me:pid,phase:g.phase,turn:g.turn,rolled:g.rolled,d:g.d
 /* ---------- AĞ (PeerJS, tarayıcıdan tarayıcıya) ---------- */
 function bc(){s=view(0);render();conns.forEach(c=>c.open&&c.send(view(c.pid)))}
 function send(o){if(host){const r=act({...o,pid:0});if(r.err)toast(r.err);bc()}else if(conn)conn.send(o)}
+const chatHistory=[];
+function addChatMessage(msg){
+  if(!msg||typeof msg.text!=='string')return;
+  chatHistory.push({name:String(msg.name||'Oyuncu').slice(0,18),text:msg.text.slice(0,240),pid:msg.pid,at:Date.now()});
+  while(chatHistory.length>80)chatHistory.shift();
+  const box=$('chatMessages');if(!box)return;
+  box.innerHTML=chatHistory.map(m=>`<div class="chat-message ${m.pid===s?.me?'mine':''}"><div class="chat-meta"><b>${escapeChat(m.name)}</b><time>${new Date(m.at).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}</time></div><p>${escapeChat(m.text)}</p></div>`).join('');
+  box.scrollTop=box.scrollHeight;
+}
+function escapeChat(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function sendChat(ev){if(ev)ev.preventDefault();const input=$('chatInput'),text=input.value.trim();if(!text)return;if(!s||s.phase==='lobby'){toast('Sohbet oyun başladıktan sonra kullanılabilir.');return;}const name=s.players[s.me]?.name||'Oyuncu',msg={name,text,pid:s.me};if(host){addChatMessage(msg);conns.forEach(c=>c.open&&c.send({chat:msg}));}else if(conn&&conn.open)conn.send({t:'chat',text});else{toast('Sohbet için odaya bağlı olmalısın.');return;}input.value='';}
+
 function startHost(){
   const name=$('nm').value.trim()||'Oyuncu',code=Math.random().toString(36).slice(2,8).toUpperCase();
   if(typeof Peer!=='function'){toast('Çevrim içi bağlantı kütüphanesi yüklenemedi. Sayfayı yenile.');return}
@@ -260,6 +272,7 @@ function startHost(){
   peer.on('connection',c=>{conns.push(c);
     c.on('data',d=>{
       if(d.t=='join'){const sp=g.players[d.sp];if(sp&&sp.name==d.name)c.pid=d.sp;else{const r=act(d);if(r.err)c.send({err:r.err});else c.pid=r.pid}}
+      else if(d.t==='chat'){const msg={name:g.players[c.pid]?.name||'Oyuncu',text:String(d.text||'').slice(0,240),pid:c.pid};addChatMessage(msg);conns.forEach(x=>x.open&&x.send({chat:msg}));}
       else{d.pid=c.pid;const r=act(d);if(r.err)c.send({err:r.err})}bc()});
     c.on('close',()=>{conns=conns.filter(x=>x!==c)})})}
 function startSolo(){
@@ -270,7 +283,7 @@ function startSolo(){
   const r=act({t:'start',pid:0});
   if(r.err){toast(r.err);return}
   $('lobby').hidden=true;
-  $('room').innerHTML='<b style="color:#f2c94c">🎮 Tek Oyunculu Deneme</b><div style="font-size:12px;margin-top:5px">Yerel oyun · İnternet/oda gerekmez</div>';
+  $('room').innerHTML='<b style="color:#f2c94c">🎮 Tek Oyunculu Deneme</b><div style="font-size:12px;margin-top:5px">Yerel oyun · İnternet/oda gerekmez</div>'; $('chatOnline').textContent='● YEREL';
   bc();
 }
 function joinRoom(){
@@ -278,7 +291,7 @@ function joinRoom(){
   peer=new Peer();peer.on('error',e=>toast(e.type=='peer-unavailable'?'Oda bulunamadı':'Hata: '+e.type));
   peer.on('open',()=>{conn=peer.connect('kadife'+code,{reliable:true});
     conn.on('open',()=>{$('lobby').hidden=true;$('room').textContent='Oda: '+code;conn.send({t:'join',name,hasDice:$('hasDice').checked,sp:sessionStorage.pid!=null?+sessionStorage.pid:null})});
-    conn.on('data',d=>{if(d.err)toast(d.err);else{s=d;if(d.me!=null)sessionStorage.pid=d.me;render()}});
+    conn.on('data',d=>{if(d.chat){addChatMessage(d.chat);return;}if(d.err)toast(d.err);else{s=d;if(d.me!=null)sessionStorage.pid=d.me;render()}});
     conn.on('error',e=>toast('Odaya bağlanılamadı: '+(e&&e.type?e.type:'bağlantı hatası')));
     conn.on('close',()=>toast('Bağlantı koptu'))})}
 
